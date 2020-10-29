@@ -108,8 +108,8 @@ ggplot(lgbBirth, aes(x = Birth, y = counts)) +
   geom_line() +
   coord_cartesian(xlim = c(1800, 2000)) +
   labs(title = "More and more LGB celebrities in the past century",
-       x = "Celebrities' Birth Year",
-       y = "Counts of Celebrities")
+       x = "LGB Celebrities' Birth Year",
+       y = "Counts of LGB Celebrities")
 ```
 
 If we only look at the Birth data, there are more LGB celebrities in the past century for sure. However, this might result from the fact that there is more data on Wikipedia in recent years. Another thing is that we don't have the data of their coming-out age, which makes it hard to figure out the reason behind the drop from 1970 to 2000. It might be that the celebrities usually come out in later years, or that in the past decades less and less celebrities came out.
@@ -165,7 +165,7 @@ lgbProf <- dProf %>%
             prop = round(n() / nrow(d), 4)) %>% 
   arrange(desc(counts))
 
-kable(head(lgbProf))
+lgbProf %>% head() %>% kable()
 ```
 
 Actor, writer and politician account for around 35% of all professions.  
@@ -334,14 +334,22 @@ Over 70 % of the Irish and the Maltese strongly agree that public figures openly
 > Focus on the data by continent - Asia
 
 ```{r}
+lgbAsia5 <- world %>% 
+  filter(continent == "Asia") %>% 
+  arrange(desc(counts)) %>% 
+  select(name, counts) %>% 
+  as_tibble() %>% 
+  filter(min_rank(desc(counts)) <= 5)
+
 world %>% 
   filter(continent == "Asia") %>% 
   ggplot() +
   geom_sf(aes(fill = counts), color = "white") +
   coord_sf(xlim = c(20, 150), ylim = c(-15, 60)) +
   scale_fill_viridis_c(option = "viridus") +
-  geom_sf_text(data = subset(world, name %in% c("China", "India", "Japan", "Philippines")), 
-               aes(label = name), color = "black", size = 4) +
+  geom_sf_text(data = subset(world, name %in% lgbAsia5$name), 
+               aes(label = paste0(name, "\n(", counts, ")")), 
+               color = "black", size = 4, nudge_x = -4.5) +
   theme_void()
 ```
 ```{r}
